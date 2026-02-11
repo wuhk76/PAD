@@ -136,7 +136,6 @@ def simplify(object, d):
             if np.sum((points[i] - points[j]) ** 2) <= d2:
                 cluster.append(j)
                 used[j] = True
-
         clusters.append(cluster)
     centroids = {}
     for cluster in clusters:
@@ -280,3 +279,10 @@ def grid(x, y, d):
             ]
             faces.append(face)
     return faces
+def polar(n, f):
+    avals = np.linspace(0, 2 * math.pi, n + 1)
+    rvals = [f(a) for a in avals]
+    points = []
+    for j in range(len(avals)):
+        points.append((rvals[j] * math.cos(avals[j]), rvals[j] * math.sin(avals[j]), 0))
+    return [points]
