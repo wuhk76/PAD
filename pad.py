@@ -159,7 +159,7 @@ def join(object, d):
         for p in elem:
             if p not in points:
                 points.append(p)
-    pts = [np.array(p, dtype=float) for p in points]
+    pts = [np.array(p, dtype = float) for p in points]
     n = len(pts)
     result = []
     result.extend(object)
@@ -183,13 +183,28 @@ def join(object, d):
     for f in faces:
         result.append(list(f))
     return result
-def plot(object, type = '-', color = 'k', equal = True):
+def convface(object):
+    newobject = [[]]
+    for j in range(len(object)):
+        newobject[0] += object[j]
+    return newobject
+def convedges(object):
+    raw = convface(object)[0]
+    newobject = []
+    for j in range(len(raw) - 1):
+        newobject.append([raw[j], raw[j + 1]])
+    return newobject
+def convpoints(object):
+    raw = convface(object)[0]
+    newobject = [[point] for point in raw]
+    return newobject
+def plot(object, type = '-', color = 'k', equal = True, renderpoly = True):
     form = object
     if equal:
         plt.axis('equal')
     for points in object:
-        xvals = [point[0] for point in points] + [points[0][0]]
-        yvals = [point[2] for point in points] + [points[0][2]]
+        xvals = [point[0] for point in points] + [points[0][0]] if renderpoly else [point[0] for point in points]
+        yvals = [point[2] for point in points] + [points[0][2]] if renderpoly else [point[2] for point in points]
         plt.plot(xvals, yvals, type, color = color)
 def show():
     plt.show()
@@ -286,3 +301,15 @@ def polar(n, f):
     for j in range(len(avals)):
         points.append((rvals[j] * math.cos(avals[j]), rvals[j] * math.sin(avals[j]), 0))
     return [points]
+def bezier(points, tvals):
+    n = len(points) - 1
+    curve = [[]]
+    for t in tvals:
+        x = 0.0
+        y = 0.0
+        for i in range(n + 1):
+            a = math.comb(n, i) * (1 - t) ** (n - i) * t ** i
+            x += a * points[i][0]
+            y += a * points[i][1]
+        curve[0].append((x, y, 0))
+    return curve
