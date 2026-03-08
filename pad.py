@@ -73,22 +73,33 @@ def revaxis(point, p1, axis, angle):
         axis * np.dot(axis, v) * (1 - cost)
     )
     return tuple(vrot + p1)
-def revolve(object, l, angle, d):
-    p1, p2 = l
+def revolve(obj, axisline, angle, steps):
+    p1, p2 = axisline
     axis = np.array(p2) - np.array(p1)
-    result = []
-    step = angle / d
-    for i in range(d + 1):
+    step = angle / steps
+    layers = []
+    for i in range(steps):
         a = step * i
-        robject = []
-        for face in object:
-            rface = []
-            for point in face:
-                rface.append(
-                    revaxis(point, p1, axis, a)
-                )
-            robject.append(rface)
-        result.extend(robject)
+        layer = []
+        for elem in obj:
+            layer.append([revaxis(p, p1, axis, a) for p in elem])
+        layers.append(layer)
+    result = []
+    for i in range(steps):
+        a = layers[i]
+        b = layers[(i + 1) % steps]
+        for j, elem in enumerate(obj):
+            if len(elem) == 1:
+                result.append([a[j][0], b[j][0]])
+            elif len(elem) == 2:
+                result.append([
+                    a[j][0],
+                    a[j][1],
+                    b[j][1],
+                    b[j][0]
+                ])
+            else:
+                result.append(a[j])
     return result
 def extrude(object, l, d):
     p1, p2 = l
